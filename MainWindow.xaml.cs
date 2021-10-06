@@ -23,6 +23,8 @@ namespace PrettyScatter
         {
             InitializeComponent();
 
+            Title = "PrettyScatter";
+
             // register listener for D&D
             {
                 RootGrid.AllowDrop = true;
