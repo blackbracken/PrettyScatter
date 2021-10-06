@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using PrettyScatter.Models;
 using PrettyScatter.Utils.Ext;
@@ -84,10 +85,7 @@ namespace PrettyScatter
 
         private void HighlightNearestPlot(object sender, MouseEventArgs ev, bool updateForce = false)
         {
-            (var mouseCoordX, var mouseCoordY) = SamplePlot.GetMouseCoordinates();
-            var xyRatio = SamplePlot.Plot.XAxis.Dims.PxPerUnit / SamplePlot.Plot.YAxis.Dims.PxPerUnit;
-            (var pointX, var pointY, var pointIndex) =
-                _myScatterPlot.GetPointNearest(mouseCoordX, mouseCoordY, xyRatio);
+            (var pointX, var pointY, var pointIndex) = GetPointNearest();
 
             _highlightedPoint.Xs[0] = pointX;
             _highlightedPoint.Ys[0] = pointY;
@@ -96,8 +94,35 @@ namespace PrettyScatter
             if (_lastHighlightedIndex != pointIndex || updateForce)
             {
                 _lastHighlightedIndex = pointIndex;
+
                 SamplePlot.Refresh();
             }
+        }
+
+        private (double, double, int) GetPointNearest()
+        {
+            (var mouseCoordX, var mouseCoordY) = SamplePlot.GetMouseCoordinates();
+            var xyRatio = SamplePlot.Plot.XAxis.Dims.PxPerUnit / SamplePlot.Plot.YAxis.Dims.PxPerUnit;
+
+            return _myScatterPlot.GetPointNearest(mouseCoordX, mouseCoordY, xyRatio);
+        }
+
+        private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!_mouseInScatterPlot) return;
+
+            (_, _, var pointIndex) = GetPointNearest();
+            if (pointIndex < 0 || LogList.Items.Count <= pointIndex)
+            {
+                MessageBox.Show("対応するコンテンツがありません", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            object item = LogList.Items.GetItemAt(pointIndex);
+            LogList.SelectionMode = DataGridSelectionMode.Extended;
+            LogList.SelectedItem = item;
+            LogList.Focus();
+            LogList.ScrollIntoView(item);
         }
 
         private async void OnDropFiles(string[] paths)

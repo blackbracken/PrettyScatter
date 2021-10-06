@@ -17,7 +17,10 @@
         <WpfPlot Name="SamplePlot" Grid.Column="0" Grid.Row="0"
                  PreviewMouseMove="OnMouseHoverPoint"
                  MouseEnter="OnMouseGoInScatterPlot"
-                 MouseLeave="OnMouseGoOutScatterPlot" />
-        <DataGrid Name="LogList" Margin="0, 16, 16, 32" Grid.Column="1" Grid.Row="0" />
+                 MouseLeave="OnMouseGoOutScatterPlot"
+                 MouseDoubleClick="OnMouseDoubleClick" />
+        <DataGrid Name="LogList" Margin="0, 16, 16, 32"
+                  IsSynchronizedWithCurrentItem="true"
+                  Grid.Column="1" Grid.Row="0" />
     </Grid>
 </Window>
