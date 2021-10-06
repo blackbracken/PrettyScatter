@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -112,7 +113,15 @@ namespace PrettyScatter
             return _myScatterPlot.GetPointNearest(mouseCoordX, mouseCoordY, xyRatio);
         }
 
-        private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void LogList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is not DependencyObject source) return;
+            if (ItemsControl.ContainerFromElement((DataGrid) sender, source) is not DataGridRow row) return;
+
+            Debug.Print($"{row.GetIndex()}");
+        }
+
+        private void SamplePlot_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (!_mouseInScatterPlot) return;
 

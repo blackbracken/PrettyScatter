@@ -18,9 +18,11 @@
                  MouseMove="OnMouseHoverPoint"
                  MouseEnter="OnMouseGoInScatterPlot"
                  MouseLeave="OnMouseGoOutScatterPlot"
-                 MouseDoubleClick="OnMouseDoubleClick" />
+                 MouseDoubleClick="SamplePlot_OnMouseDoubleClick" />
         <DataGrid Name="LogList" Margin="0, 16, 16, 32"
                   IsSynchronizedWithCurrentItem="true"
+                  MouseDoubleClick="LogList_OnMouseDoubleClick"
+                  IsReadOnly="True"
                   Grid.Column="1" Grid.Row="0" />
     </Grid>
 </Window>
