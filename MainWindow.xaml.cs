@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -15,7 +14,7 @@ namespace PrettyScatter
 {
     public partial class MainWindow : Window
     {
-        private readonly ScatterPlot _highlightedPoint;
+        private ScatterPlot _highlightedPoint;
         private ScatterPlot? _myScatterPlot;
         private int _lastHighlightedIndex;
         private bool _mouseInScatterPlot;
@@ -28,8 +27,7 @@ namespace PrettyScatter
             InitializeComponent();
 
             Title = "PrettyScatter";
-
-            // register listener for D&D
+            
             {
                 SamplePlot.AllowDrop = true;
                 SamplePlot.PreviewDragOver += (_, ev) =>
@@ -50,8 +48,8 @@ namespace PrettyScatter
                 };
             }
             {
-                LogList.AllowDrop = true;
-                LogList.PreviewDragOver += (_, ev) =>
+                LogGrid.AllowDrop = true;
+                LogGrid.PreviewDragOver += (_, ev) =>
                 {
                     if (ev.IsGottenFile())
                     {
@@ -60,7 +58,7 @@ namespace PrettyScatter
 
                     ev.Handled = true;
                 };
-                LogList.PreviewDrop += (_, ev) =>
+                LogGrid.PreviewDrop += (_, ev) =>
                 {
                     if (ev.IsGottenFile())
                     {
@@ -68,16 +66,10 @@ namespace PrettyScatter
                     }
                 };
             }
-
-            // settings for scatter plot
+            
             {
+                ResetPlot();
                 SamplePlot.Configuration.DoubleClickBenchmark = false;
-
-                _highlightedPoint = SamplePlot.Plot.AddPoint(0, 0);
-                _highlightedPoint.Color = System.Drawing.Color.Red;
-                _highlightedPoint.MarkerSize = 10;
-                _highlightedPoint.MarkerShape = MarkerShape.openCircle;
-                _highlightedPoint.IsVisible = false;
 
                 SamplePlot.Refresh();
             }
@@ -118,6 +110,10 @@ namespace PrettyScatter
             {
                 _lastHighlightedIndex = pointIndex;
 
+                // TODO: ちゃんとはみ出ないように
+                var text = $"選択: {pointIndex} / {_log?.LogTextList[pointIndex] ?? "none"}";
+                LogText.Text = text.Length < 100 ? text : (new string(text.Take(200).ToArray()) + "...");
+
                 SamplePlot.Refresh();
             }
         }
@@ -135,6 +131,7 @@ namespace PrettyScatter
             if (e.OriginalSource is not DependencyObject source) return;
             if (ItemsControl.ContainerFromElement((DataGrid)sender, source) is not DataGridRow row) return;
 
+            // TODO: implement
             Debug.Print($"{row.GetIndex()}");
         }
 
@@ -145,17 +142,17 @@ namespace PrettyScatter
             if (GetPointNearest() is not (_, _, _) nearest) return;
             var (_, _, pointIndex) = nearest;
 
-            if (pointIndex < 0 || LogList.Items.Count <= pointIndex)
+            if (pointIndex < 0 || LogGrid.Items.Count <= pointIndex)
             {
                 MessageBox.Show("プロットに対応するコンテンツがありません", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            object item = LogList.Items.GetItemAt(pointIndex);
-            LogList.SelectionMode = DataGridSelectionMode.Extended;
-            LogList.SelectedItem = item;
-            LogList.Focus();
-            LogList.ScrollIntoView(item);
+            object item = LogGrid.Items.GetItemAt(pointIndex);
+            LogGrid.SelectionMode = DataGridSelectionMode.Extended;
+            LogGrid.SelectedItem = item;
+            LogGrid.Focus();
+            LogGrid.ScrollIntoView(item);
         }
 
         private async void OnDropClusterFiles(string[] paths)
@@ -169,9 +166,7 @@ namespace PrettyScatter
             _plots = await Plots.FromFile(paths[0]);
 
             {
-                SamplePlot.Plot.Clear();
-
-                var cs = _plots.PlotList.Select(p => p.cluster).ToArray();
+                ResetPlot();
 
                 var group = _plots.PlotList.GroupBy(p => p.cluster);
 
@@ -201,6 +196,8 @@ namespace PrettyScatter
 
                 SamplePlot.Refresh();
             }
+
+            LogText.Text = $"データ読み込み: {paths[0]}";
         }
 
         private async void OnDropLogFiles(string[] paths)
@@ -208,13 +205,26 @@ namespace PrettyScatter
             _log = await Log.FromFile(paths[0]);
 
             {
-                LogList.ItemsSource = new ObservableCollection<LogListItem>(_log.LogTextList.Select((elem, idx) =>
+                LogGrid.ItemsSource = new ObservableCollection<LogListItem>(_log.LogTextList.Select((elem, idx) =>
                     new LogListItem
                     {
                         Index = idx,
                         Content = elem,
                     }));
             }
+
+            LogText.Text = $"データ読み込み: {paths[0]}";
+        }
+
+        private void ResetPlot()
+        {
+            SamplePlot.Plot.Clear();
+
+            _highlightedPoint = SamplePlot.Plot.AddPoint(0, 0);
+            _highlightedPoint.Color = Color.Red;
+            _highlightedPoint.MarkerSize = 10;
+            _highlightedPoint.MarkerShape = MarkerShape.openCircle;
+            _highlightedPoint.IsVisible = false;
         }
 
         public struct LogListItem
