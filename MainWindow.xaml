@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
 
         <WpfPlot Name="SamplePlot" Grid.Column="0" Grid.Row="0"
-                 PreviewMouseMove="OnMouseHoverPoint"
+                 MouseMove="OnMouseHoverPoint"
                  MouseEnter="OnMouseGoInScatterPlot"
                  MouseLeave="OnMouseGoOutScatterPlot"
                  MouseDoubleClick="OnMouseDoubleClick" />
