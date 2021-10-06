@@ -1,14 +1,22 @@
-﻿using System.Windows;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using PrettyScatter.Models;
 using PrettyScatter.Utils.Ext;
 
 namespace PrettyScatter
 {
     public partial class MainWindow : Window
     {
+        private Log? log = null;
+
         public MainWindow()
         {
             InitializeComponent();
 
+            // register listener for D&D
             {
                 RootGrid.AllowDrop = true;
                 RootGrid.PreviewDragOver += (_, ev) =>
@@ -35,10 +43,13 @@ namespace PrettyScatter
             SamplePlot.Refresh();
         }
 
-        private void OnDropFiles(string[] paths)
+        private async void OnDropFiles(string[] paths)
         {
             double[] dataX = { 30, 50, 0, 640, 501 };
             double[] dataY = { 0, 3, 0, 305, 20 };
+
+            log = await Log.FromFile(paths[0]);
+            Debug.Print(log.LogTextList[10000]);
 
             SamplePlot.Plot.RemoveAt(0);
             SamplePlot.Plot.AddScatter(dataX, dataY);
