@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,8 +38,8 @@ namespace PrettyScatter
                 };
             }
 
-            double[] dataX = new double[] { 1, 2, 3, 4, 5 };
-            double[] dataY = new double[] { 1, 4, 9, 16, 25 };
+            double[] dataX = { 1, 2, 3, 4, 5 };
+            double[] dataY = { 1, 4, 9, 16, 25 };
             SamplePlot.Plot.AddScatter(dataX, dataY);
             SamplePlot.Refresh();
         }
@@ -49,11 +50,24 @@ namespace PrettyScatter
             double[] dataY = { 0, 3, 0, 305, 20 };
 
             log = await Log.FromFile(paths[0]);
-            Debug.Print(log.LogTextList[10000]);
+            {
+                LogList.ItemsSource = new ObservableCollection<LogListItem>(log.LogTextList.Select((elem, idx) =>
+                    new LogListItem
+                    {
+                        Index = idx,
+                        Content = elem,
+                    }));
+            }
 
             SamplePlot.Plot.RemoveAt(0);
             SamplePlot.Plot.AddScatter(dataX, dataY);
             SamplePlot.Refresh();
+        }
+
+        public struct LogListItem
+        {
+            public int Index { get; set; }
+            public string Content { get; set; }
         }
     }
 }

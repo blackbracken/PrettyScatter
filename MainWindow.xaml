@@ -14,6 +14,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <WpfPlot Name="SamplePlot"></WpfPlot>
+        <WpfPlot Name="SamplePlot" Grid.Column="0" Grid.Row="0" />
+        <DataGrid Name="LogList" Margin="0, 16, 16, 32" Grid.Column="1" Grid.Row="0" />
     </Grid>
 </Window>
