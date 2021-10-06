@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,12 +15,13 @@ namespace PrettyScatter
 {
     public partial class MainWindow : Window
     {
-        private readonly ScatterPlot _myScatterPlot;
         private readonly ScatterPlot _highlightedPoint;
+        private ScatterPlot? _myScatterPlot;
         private int _lastHighlightedIndex;
         private bool _mouseInScatterPlot;
 
         private Log? _log;
+        private Plots? _plots;
 
         public MainWindow()
         {
@@ -28,8 +31,8 @@ namespace PrettyScatter
 
             // register listener for D&D
             {
-                RootGrid.AllowDrop = true;
-                RootGrid.PreviewDragOver += (_, ev) =>
+                SamplePlot.AllowDrop = true;
+                SamplePlot.PreviewDragOver += (_, ev) =>
                 {
                     if (ev.IsGottenFile())
                     {
@@ -38,20 +41,36 @@ namespace PrettyScatter
 
                     ev.Handled = true;
                 };
-                RootGrid.PreviewDrop += (_, ev) =>
+                SamplePlot.PreviewDrop += (_, ev) =>
                 {
                     if (ev.IsGottenFile())
                     {
-                        OnDropFiles(ev.GetFilePathsUnsafe());
+                        OnDropClusterFiles(ev.GetFilePathsUnsafe());
+                    }
+                };
+            }
+            {
+                LogList.AllowDrop = true;
+                LogList.PreviewDragOver += (_, ev) =>
+                {
+                    if (ev.IsGottenFile())
+                    {
+                        ev.Effects = ev.Effects = DragDropEffects.Copy;
+                    }
+
+                    ev.Handled = true;
+                };
+                LogList.PreviewDrop += (_, ev) =>
+                {
+                    if (ev.IsGottenFile())
+                    {
+                        OnDropLogFiles(ev.GetFilePathsUnsafe());
                     }
                 };
             }
 
             // settings for scatter plot
             {
-                double[] dataX = { 1, 2, 3, 4, 5 };
-                double[] dataY = { 1, 4, 9, 16, 25 };
-
                 SamplePlot.Configuration.DoubleClickBenchmark = false;
 
                 _highlightedPoint = SamplePlot.Plot.AddPoint(0, 0);
@@ -59,9 +78,6 @@ namespace PrettyScatter
                 _highlightedPoint.MarkerSize = 10;
                 _highlightedPoint.MarkerShape = MarkerShape.openCircle;
                 _highlightedPoint.IsVisible = false;
-
-                _myScatterPlot = SamplePlot.Plot.AddScatterPoints(dataX, dataY);
-                SamplePlot.Plot.AddScatter(dataX, dataY);
 
                 SamplePlot.Refresh();
             }
@@ -91,7 +107,8 @@ namespace PrettyScatter
 
         private void HighlightNearestPlot(object sender, MouseEventArgs ev, bool updateForce = false)
         {
-            (var pointX, var pointY, var pointIndex) = GetPointNearest();
+            if (GetPointNearest() is not (_, _, _) nearest) return;
+            var (pointX, pointY, pointIndex) = nearest;
 
             _highlightedPoint.Xs[0] = pointX;
             _highlightedPoint.Ys[0] = pointY;
@@ -105,18 +122,18 @@ namespace PrettyScatter
             }
         }
 
-        private (double, double, int) GetPointNearest()
+        private (double, double, int)? GetPointNearest()
         {
-            (var mouseCoordX, var mouseCoordY) = SamplePlot.GetMouseCoordinates();
+            var (mouseX, mouseY) = SamplePlot.GetMouseCoordinates();
             var xyRatio = SamplePlot.Plot.XAxis.Dims.PxPerUnit / SamplePlot.Plot.YAxis.Dims.PxPerUnit;
 
-            return _myScatterPlot.GetPointNearest(mouseCoordX, mouseCoordY, xyRatio);
+            return _myScatterPlot?.GetPointNearest(mouseX, mouseY, xyRatio);
         }
 
         private void LogList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.OriginalSource is not DependencyObject source) return;
-            if (ItemsControl.ContainerFromElement((DataGrid) sender, source) is not DataGridRow row) return;
+            if (ItemsControl.ContainerFromElement((DataGrid)sender, source) is not DataGridRow row) return;
 
             Debug.Print($"{row.GetIndex()}");
         }
@@ -125,7 +142,9 @@ namespace PrettyScatter
         {
             if (!_mouseInScatterPlot) return;
 
-            (_, _, var pointIndex) = GetPointNearest();
+            if (GetPointNearest() is not (_, _, _) nearest) return;
+            var (_, _, pointIndex) = nearest;
+
             if (pointIndex < 0 || LogList.Items.Count <= pointIndex)
             {
                 MessageBox.Show("プロットに対応するコンテンツがありません", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -139,7 +158,52 @@ namespace PrettyScatter
             LogList.ScrollIntoView(item);
         }
 
-        private async void OnDropFiles(string[] paths)
+        private async void OnDropClusterFiles(string[] paths)
+        {
+            if (_log == null)
+            {
+                MessageBox.Show("ログデータを先に読み込ませて下さい", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            _plots = await Plots.FromFile(paths[0]);
+
+            {
+                SamplePlot.Plot.Clear();
+
+                var cs = _plots.PlotList.Select(p => p.cluster).ToArray();
+
+                var group = _plots.PlotList.GroupBy(p => p.cluster);
+
+                _myScatterPlot = SamplePlot.Plot.AddScatterPoints(
+                    _plots.PlotList.Select(p => p.x).ToArray(),
+                    _plots.PlotList.Select(p => p.y).ToArray()
+                );
+                foreach (var g in group)
+                {
+                    var cluster = g.First().cluster;
+                    var xs = g.Select(p => p.x).ToArray();
+                    var ys = g.Select(p => p.y).ToArray();
+
+                    var color = cluster switch
+                    {
+                        0 => Color.OrangeRed,
+                        1 => Color.GreenYellow,
+                        2 => Color.BlueViolet,
+                        3 => Color.Aquamarine,
+                        4 => Color.Brown,
+                        _ => Color.DarkKhaki
+                    };
+
+                    SamplePlot.Plot.AddScatter(xs, ys, lineWidth: 0, color: color);
+                }
+
+
+                SamplePlot.Refresh();
+            }
+        }
+
+        private async void OnDropLogFiles(string[] paths)
         {
             _log = await Log.FromFile(paths[0]);
 
