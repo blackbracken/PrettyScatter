@@ -46,9 +46,12 @@ namespace PrettyScatter
                 };
             }
 
+            // settings for scatter plot
             {
                 double[] dataX = { 1, 2, 3, 4, 5 };
                 double[] dataY = { 1, 4, 9, 16, 25 };
+
+                SamplePlot.Configuration.DoubleClickBenchmark = false;
 
                 _highlightedPoint = SamplePlot.Plot.AddPoint(0, 0);
                 _highlightedPoint.Color = System.Drawing.Color.Red;
@@ -116,7 +119,7 @@ namespace PrettyScatter
             (_, _, var pointIndex) = GetPointNearest();
             if (pointIndex < 0 || LogList.Items.Count <= pointIndex)
             {
-                MessageBox.Show("対応するコンテンツがありません", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("プロットに対応するコンテンツがありません", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
