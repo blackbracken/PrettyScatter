@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrettyScatter", "PrettyScatter.csproj", "{6DFF4E3B-1CC1-463B-A0EC-724DD2ABF2EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6DFF4E3B-1CC1-463B-A0EC-724DD2ABF2EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DFF4E3B-1CC1-463B-A0EC-724DD2ABF2EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DFF4E3B-1CC1-463B-A0EC-724DD2ABF2EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DFF4E3B-1CC1-463B-A0EC-724DD2ABF2EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1F5E7A2F-C51F-46F5-825A-94D95883C581}
+	EndGlobalSection
+EndGlobal
