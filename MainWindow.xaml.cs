@@ -177,13 +177,13 @@ namespace PrettyScatter
             {
                 ResetPlot();
 
-                var group = _plots.PlotList.GroupBy(p => p.Cluster);
+                var groups = _plots.PlotList.GroupBy(p => p.Cluster);
 
                 _myScatterPlot = SamplePlot.Plot.AddScatterPoints(
                     _plots.PlotList.Select(p => p.X).ToArray(),
                     _plots.PlotList.Select(p => p.Y).ToArray()
                 );
-                foreach (var g in group)
+                foreach (var g in groups)
                 {
                     var cluster = g.First().Cluster;
                     var xs = g.Select(p => p.X).ToArray();
@@ -192,9 +192,9 @@ namespace PrettyScatter
                     var color = cluster switch
                     {
                         0 => Color.OrangeRed,
-                        1 => Color.GreenYellow,
+                        1 => Color.Green,
                         2 => Color.BlueViolet,
-                        3 => Color.Aquamarine,
+                        3 => Color.Blue,
                         4 => Color.Brown,
                         _ => Color.DarkKhaki
                     };
