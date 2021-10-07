@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -15,31 +16,38 @@ namespace PrettyScatter.Models
             PlotList = plots.ToImmutableList();
         }
 
-        public static async Task<Plots> FromFile(string path)
+        public static async Task<Plots?> FromFile(string path)
         {
-            var plots = await Task.Run(() => File
-                .ReadAllLines(path)
-                .Select(line =>
-                {
-                    var split = line.Split(",");
-                    return new Plot
+            try
+            {
+                var plots = await Task.Run(() => File
+                    .ReadAllLines(path)
+                    .Select(line =>
                     {
-                        x = double.Parse(split[0]),
-                        y = double.Parse(split[1]),
-                        cluster = int.Parse(split[2]),
-                    };
-                })
-                .ToList()
-            );
+                        var split = line.Split(",");
+                        return new Plot
+                        {
+                            X = double.Parse(split[0]),
+                            Y = double.Parse(split[1]),
+                            Cluster = int.Parse(split[2]),
+                        };
+                    })
+                    .ToList()
+                );
 
-            return new Plots(plots);
+                return new Plots(plots);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 
     public struct Plot
     {
-        public double x { get; set; }
-        public double y { get; set; }
-        public int cluster { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
+        public int Cluster { get; set; }
     }
 }

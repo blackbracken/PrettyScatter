@@ -27,7 +27,7 @@ namespace PrettyScatter
             InitializeComponent();
 
             Title = "PrettyScatter";
-            
+
             {
                 SamplePlot.AllowDrop = true;
                 SamplePlot.PreviewDragOver += (_, ev) =>
@@ -66,7 +66,7 @@ namespace PrettyScatter
                     }
                 };
             }
-            
+
             {
                 ResetPlot();
                 SamplePlot.Configuration.DoubleClickBenchmark = false;
@@ -163,22 +163,31 @@ namespace PrettyScatter
                 return;
             }
 
-            _plots = await Plots.FromFile(paths[0]);
+            if (await Plots.FromFile(paths[0]) is { } plots)
+            {
+                _plots = plots;
+            }
+            else
+            {
+                MessageBox.Show("ファイルの読み込みに失敗しました", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
 
             {
                 ResetPlot();
 
-                var group = _plots.PlotList.GroupBy(p => p.cluster);
+                var group = _plots.PlotList.GroupBy(p => p.Cluster);
 
                 _myScatterPlot = SamplePlot.Plot.AddScatterPoints(
-                    _plots.PlotList.Select(p => p.x).ToArray(),
-                    _plots.PlotList.Select(p => p.y).ToArray()
+                    _plots.PlotList.Select(p => p.X).ToArray(),
+                    _plots.PlotList.Select(p => p.Y).ToArray()
                 );
                 foreach (var g in group)
                 {
-                    var cluster = g.First().cluster;
-                    var xs = g.Select(p => p.x).ToArray();
-                    var ys = g.Select(p => p.y).ToArray();
+                    var cluster = g.First().Cluster;
+                    var xs = g.Select(p => p.X).ToArray();
+                    var ys = g.Select(p => p.Y).ToArray();
 
                     var color = cluster switch
                     {
@@ -202,7 +211,15 @@ namespace PrettyScatter
 
         private async void OnDropLogFiles(string[] paths)
         {
-            _log = await Log.FromFile(paths[0]);
+            if (await Log.FromFile(paths[0]) is { } log)
+            {
+                _log = log;
+            }
+            else
+            {
+                MessageBox.Show("ファイルの読み込みに失敗しました", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             {
                 LogGrid.ItemsSource = new ObservableCollection<LogListItem>(_log.LogTextList.Select((elem, idx) =>
