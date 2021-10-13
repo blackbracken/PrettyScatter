@@ -24,6 +24,7 @@ namespace PrettyScatter
         private bool _mouseInScatterPlot;
 
         private readonly ObservableCollection<ClusterListBoxItem> _clusterList;
+        private readonly Dictionary<int, Color> _clusterColorMap;
 
         public MainWindow()
         {
@@ -32,6 +33,7 @@ namespace PrettyScatter
 
             _clusterList = new ObservableCollection<ClusterListBoxItem>();
             ClusterListBox.ItemsSource = _clusterList;
+            _clusterColorMap = new Dictionary<int, Color>();
 
             Title = "PrettyScatter";
 
@@ -173,28 +175,14 @@ namespace PrettyScatter
 
             if (_presenter.Plots is not { } plots) return;
 
-            ResetGraph();
-
-            var groups = plots.PlotList.GroupBy(p => p.Cluster);
-
-            _myScatterPlot = Graph.Plot.AddScatterPoints(
-                plots.PlotList.Select(p => p.X).ToArray(),
-                plots.PlotList.Select(p => p.Y).ToArray()
-            );
-
-            var random = new Random(); // TODO: recolor
-            foreach (var g in groups)
+            _clusterColorMap.Clear();
+            foreach (var c in plots.PlotList.Select(p => p.Cluster).Distinct())
             {
-                var cluster = g.First().Cluster;
-                var xs = g.Select(p => p.X).ToArray();
-                var ys = g.Select(p => p.Y).ToArray();
-
-                var color = Color.FromArgb(255, random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-
-                Graph.Plot.AddScatter(xs, ys, lineWidth: 0, color: color);
+                var rnd = new Random(c);
+                _clusterColorMap.Add(c, Color.FromArgb(255, rnd.Next(0, 255), rnd.Next(0, 255), rnd.Next(0, 255)));
             }
 
-            Graph.Refresh();
+            RerenderGraph(_ => true);
 
             _clusterList.Clear();
             var clusterList = plots.PlotList.Select(p => p.Cluster).Distinct().ToList();
@@ -233,9 +221,36 @@ namespace PrettyScatter
             );
         }
 
+        private void RerenderGraph(Func<int, bool> clusterFilter)
+        {
+            ResetGraph();
+            if (_presenter.Plots is not { } plots) return;
+
+            var groups = plots.PlotList.GroupBy(p => p.Cluster);
+
+            _myScatterPlot = Graph.Plot.AddScatterPoints(
+                plots.PlotList.Where(p => clusterFilter(p.Cluster)).Select(p => p.X).ToArray(),
+                plots.PlotList.Where(p => clusterFilter(p.Cluster)).Select(p => p.Y).ToArray()
+            );
+
+            foreach (var g in groups)
+            {
+                var cluster = g.First().Cluster;
+                if (!clusterFilter(cluster)) continue;
+
+                var xs = g.Select(p => p.X).ToArray();
+                var ys = g.Select(p => p.Y).ToArray();
+                
+                Graph.Plot.AddScatter(xs, ys, lineWidth: 0, color: _clusterColorMap[cluster]);
+            }
+
+            Graph.Refresh(true);
+        }
+
         private void ResetGraph()
         {
             Graph.Plot.Clear();
+            _myScatterPlot = null;
 
             _highlightedPoint = Graph.Plot.AddPoint(0, 0);
             _highlightedPoint.Color = Color.Red;
@@ -244,9 +259,18 @@ namespace PrettyScatter
             _highlightedPoint.IsVisible = false;
         }
 
-        private void ClusterListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ClusterListBox_OnSelectionChanged(object sender, RoutedEventArgs e)
         {
-            Debug.Print(((sender as ListBox).SelectedItem as ClusterListBoxItem).DisplayName);
+            if (sender is not ListBox { SelectedItem: ClusterListBoxItem item }) return;
+            
+            RerenderGraph(c => c == item.ClusterId);
+        }
+
+        private void ResetClusterButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            ClusterListBox.UnselectAll();
+
+            RerenderGraph(_ => true);
         }
 
         public class ClusterListBoxItem

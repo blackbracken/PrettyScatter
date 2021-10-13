@@ -18,23 +18,38 @@
             <RowDefinition Height="32" />
         </Grid.RowDefinitions>
 
-        <ListBox Name="ClusterListBox" Margin="16, 8, 0, 8" 
-                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
-                 SelectionMode="Single"
-                 SelectionChanged="ClusterListBox_OnSelectionChanged">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding DisplayName}" Margin="10" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-            <WpfPlot Name="Graph" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
-                     MouseMove="Graph_OnMouseHoverPoint"
-                     MouseEnter="Graph_OnMouseGoInScatterPlot"
-                     MouseLeave="Graph_OnMouseGoOutScatterPlot"
-                     MouseDoubleClick="Graph_OnMouseDoubleClick" />
+        <Grid Name="ClusterGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
+              Margin="8, 0, 0, 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="48" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Name="ClusterTitle" Grid.Row="0"
+                       Text="クラスター凝視" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Margin="0, 8, 0, 0"/>
+            <ListBox Name="ClusterListBox" Grid.Row="1" Margin="0, 8, 0, 0"
+                     SelectionMode="Single"
+                     SelectionChanged="ClusterListBox_OnSelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DisplayName}" Margin="10" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Button Name="ResetClusterButton" Grid.Row="2" Margin="0, 8, 0, 8"
+                    Content="クラスター凝視解除" Click="ResetClusterButton_OnClick" />
+        </Grid>
+
+        <WpfPlot Name="Graph" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
+                 MouseMove="Graph_OnMouseHoverPoint"
+                 MouseEnter="Graph_OnMouseGoInScatterPlot"
+                 MouseLeave="Graph_OnMouseGoOutScatterPlot"
+                 MouseDoubleClick="Graph_OnMouseDoubleClick" />
         <DataGrid Name="LogGrid" Margin="0, 8, 16, 0"
                   IsSynchronizedWithCurrentItem="true"
                   IsReadOnly="True"
