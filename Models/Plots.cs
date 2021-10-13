@@ -20,8 +20,8 @@ namespace PrettyScatter.Models
         {
             try
             {
-                var plots = await Task.Run(() => File
-                    .ReadAllLines(path)
+                var lines = await Task.Run(() => File.ReadAllLines(path));
+                var plots = lines
                     .Select(line =>
                     {
                         var split = line.Split(",");
@@ -32,8 +32,7 @@ namespace PrettyScatter.Models
                             Cluster = int.Parse(split[2]),
                         };
                     })
-                    .ToList()
-                );
+                    .ToList();
 
                 return new Plots(plots);
             }
