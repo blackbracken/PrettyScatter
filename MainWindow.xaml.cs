@@ -53,7 +53,7 @@ namespace PrettyScatter
                 {
                     if (ev.IsGottenFile())
                     {
-                        ev.Effects = ev.Effects = DragDropEffects.Copy;
+                        ev.Effects = DragDropEffects.Copy;
                     }
 
                     ev.Handled = true;
