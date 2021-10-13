@@ -1,7 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -222,12 +224,16 @@ namespace PrettyScatter
             }
 
             {
-                LogGrid.ItemsSource = new ObservableCollection<LogListItem>(_log.LogTextList.Select((elem, idx) =>
-                    new LogListItem
-                    {
-                        Index = idx,
-                        Content = elem,
-                    }));
+                LogGrid.ItemsSource = new ObservableCollection<LogListItem>(_log.LogTextList
+                    .Select(text => Regex.Replace(text, @"(?<=\G.{45})(?!$)", Environment.NewLine))
+                    .Select((elem, idx) =>
+                        new LogListItem
+                        {
+                            Index = idx,
+                            Content = elem,
+                        }
+                    )
+                );
             }
 
             LogText.Text = $"データ読み込み: {paths[0]}";
