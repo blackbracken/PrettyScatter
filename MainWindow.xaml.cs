@@ -31,17 +31,17 @@ namespace PrettyScatter
             Title = "PrettyScatter";
 
             {
-                SamplePlot.AllowDrop = true;
-                SamplePlot.PreviewDragOver += (_, ev) =>
+                Graph.AllowDrop = true;
+                Graph.PreviewDragOver += (_, ev) =>
                 {
                     if (ev.IsGottenFile())
                     {
-                        ev.Effects = ev.Effects = DragDropEffects.Copy;
+                        ev.Effects = DragDropEffects.Copy;
                     }
 
                     ev.Handled = true;
                 };
-                SamplePlot.PreviewDrop += (_, ev) =>
+                Graph.PreviewDrop += (_, ev) =>
                 {
                     if (ev.IsGottenFile())
                     {
@@ -70,33 +70,33 @@ namespace PrettyScatter
             }
 
             {
-                ResetPlot();
-                SamplePlot.Configuration.DoubleClickBenchmark = false;
+                ResetGraph();
+                Graph.Configuration.DoubleClickBenchmark = false;
 
-                SamplePlot.Refresh();
+                Graph.Refresh();
             }
         }
 
-        private void OnMouseHoverPoint(object sender, MouseEventArgs ev)
+        private void Graph_OnMouseHoverPoint(object sender, MouseEventArgs ev)
         {
             if (!_mouseInScatterPlot) return;
 
             HighlightNearestPlot(sender, ev);
         }
 
-        private void OnMouseGoInScatterPlot(object sender, MouseEventArgs ev)
+        private void Graph_OnMouseGoInScatterPlot(object sender, MouseEventArgs ev)
         {
             _mouseInScatterPlot = true;
 
             HighlightNearestPlot(sender, ev, true);
         }
 
-        private void OnMouseGoOutScatterPlot(object sender, MouseEventArgs ev)
+        private void Graph_OnMouseGoOutScatterPlot(object sender, MouseEventArgs ev)
         {
             _mouseInScatterPlot = false;
 
             _highlightedPoint.IsVisible = false;
-            SamplePlot.Refresh();
+            Graph.Refresh();
         }
 
         private void HighlightNearestPlot(object sender, MouseEventArgs ev, bool updateForce = false)
@@ -116,19 +116,19 @@ namespace PrettyScatter
                 var text = $"選択: {pointIndex} / {_log?.LogTextList[pointIndex] ?? "none"}";
                 LogText.Text = text.Length < 100 ? text : (new string(text.Take(200).ToArray()) + "...");
 
-                SamplePlot.Refresh();
+                Graph.Refresh();
             }
         }
 
         private (double, double, int)? GetPointNearest()
         {
-            var (mouseX, mouseY) = SamplePlot.GetMouseCoordinates();
-            var xyRatio = SamplePlot.Plot.XAxis.Dims.PxPerUnit / SamplePlot.Plot.YAxis.Dims.PxPerUnit;
+            var (mouseX, mouseY) = Graph.GetMouseCoordinates();
+            var xyRatio = Graph.Plot.XAxis.Dims.PxPerUnit / Graph.Plot.YAxis.Dims.PxPerUnit;
 
             return _myScatterPlot?.GetPointNearest(mouseX, mouseY, xyRatio);
         }
 
-        private void LogList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void LogGrid_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.OriginalSource is not DependencyObject source) return;
             if (ItemsControl.ContainerFromElement((DataGrid)sender, source) is not DataGridRow row) return;
@@ -137,7 +137,7 @@ namespace PrettyScatter
             Debug.Print($"{row.GetIndex()}");
         }
 
-        private void SamplePlot_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void Graph_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (!_mouseInScatterPlot) return;
 
@@ -177,11 +177,11 @@ namespace PrettyScatter
 
 
             {
-                ResetPlot();
+                ResetGraph();
 
                 var groups = _plots.PlotList.GroupBy(p => p.Cluster);
 
-                _myScatterPlot = SamplePlot.Plot.AddScatterPoints(
+                _myScatterPlot = Graph.Plot.AddScatterPoints(
                     _plots.PlotList.Select(p => p.X).ToArray(),
                     _plots.PlotList.Select(p => p.Y).ToArray()
                 );
@@ -201,11 +201,11 @@ namespace PrettyScatter
                         _ => Color.DarkKhaki
                     };
 
-                    SamplePlot.Plot.AddScatter(xs, ys, lineWidth: 0, color: color);
+                    Graph.Plot.AddScatter(xs, ys, lineWidth: 0, color: color);
                 }
 
 
-                SamplePlot.Refresh();
+                Graph.Refresh();
             }
 
             LogText.Text = $"データ読み込み: {paths[0]}";
@@ -239,11 +239,11 @@ namespace PrettyScatter
             LogText.Text = $"データ読み込み: {paths[0]}";
         }
 
-        private void ResetPlot()
+        private void ResetGraph()
         {
-            SamplePlot.Plot.Clear();
+            Graph.Plot.Clear();
 
-            _highlightedPoint = SamplePlot.Plot.AddPoint(0, 0);
+            _highlightedPoint = Graph.Plot.AddPoint(0, 0);
             _highlightedPoint.Color = Color.Red;
             _highlightedPoint.MarkerSize = 10;
             _highlightedPoint.MarkerShape = MarkerShape.openCircle;

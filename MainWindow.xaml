@@ -17,14 +17,14 @@
             <RowDefinition Height="32" />
         </Grid.RowDefinitions>
 
-        <WpfPlot Name="SamplePlot" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
-                 MouseMove="OnMouseHoverPoint"
-                 MouseEnter="OnMouseGoInScatterPlot"
-                 MouseLeave="OnMouseGoOutScatterPlot"
-                 MouseDoubleClick="SamplePlot_OnMouseDoubleClick" />
+        <WpfPlot Name="Graph" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
+                 MouseMove="Graph_OnMouseHoverPoint"
+                 MouseEnter="Graph_OnMouseGoInScatterPlot"
+                 MouseLeave="Graph_OnMouseGoOutScatterPlot"
+                 MouseDoubleClick="Graph_OnMouseDoubleClick" />
         <DataGrid Name="LogGrid" Margin="0, 8, 16, 0"
                   IsSynchronizedWithCurrentItem="true"
-                  MouseDoubleClick="LogList_OnMouseDoubleClick"
+                  MouseDoubleClick="LogGrid_OnMouseDoubleClick"
                   IsReadOnly="True"
                   Grid.Column="1" Grid.Row="0" />
         <CheckBox Grid.Column="1" Grid.Row="1" Margin="0, 8, 16, 0"
