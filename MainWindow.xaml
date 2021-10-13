@@ -20,7 +20,8 @@
 
         <ListBox Name="ClusterListBox" Margin="16, 8, 0, 8" 
                  Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
-                 SelectionMode="Single">
+                 SelectionMode="Single"
+                 SelectionChanged="ClusterListBox_OnSelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">

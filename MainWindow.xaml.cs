@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
@@ -21,10 +23,15 @@ namespace PrettyScatter
         private int _lastHighlightedIndex;
         private bool _mouseInScatterPlot;
 
+        private readonly ObservableCollection<ClusterListBoxItem> _clusterList;
+
         public MainWindow()
         {
             InitializeComponent();
             _presenter = new MainPresenter(this);
+
+            _clusterList = new ObservableCollection<ClusterListBoxItem>();
+            ClusterListBox.ItemsSource = _clusterList;
 
             Title = "PrettyScatter";
 
@@ -72,15 +79,6 @@ namespace PrettyScatter
                 Graph.Configuration.DoubleClickBenchmark = false;
 
                 Graph.Refresh();
-
-                // TODO: delete
-                var clusterList = new ObservableCollection<ClusterListBoxItem>();
-                for (var i = 0; i < 20; i++)
-                {
-                    clusterList.Add(new ClusterListBoxItem("cluster"));
-                }
-
-                ClusterListBox.ItemsSource = clusterList;
             }
         }
 
@@ -172,6 +170,7 @@ namespace PrettyScatter
                 MessageBox.Show("ファイルの読み込みに失敗しました", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
             if (_presenter.Plots is not { } plots) return;
 
             ResetGraph();
@@ -182,27 +181,29 @@ namespace PrettyScatter
                 plots.PlotList.Select(p => p.X).ToArray(),
                 plots.PlotList.Select(p => p.Y).ToArray()
             );
+
+            var random = new Random(); // TODO: recolor
             foreach (var g in groups)
             {
                 var cluster = g.First().Cluster;
                 var xs = g.Select(p => p.X).ToArray();
                 var ys = g.Select(p => p.Y).ToArray();
 
-                var color = cluster switch
-                {
-                    0 => Color.OrangeRed,
-                    1 => Color.Green,
-                    2 => Color.BlueViolet,
-                    3 => Color.Blue,
-                    4 => Color.Brown,
-                    _ => Color.DarkKhaki
-                };
+                var color = Color.FromArgb(255, random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
 
                 Graph.Plot.AddScatter(xs, ys, lineWidth: 0, color: color);
             }
 
-
             Graph.Refresh();
+
+            _clusterList.Clear();
+            var clusterList = plots.PlotList.Select(p => p.Cluster).Distinct().ToList();
+            clusterList.Sort();
+
+            foreach (var c in clusterList)
+            {
+                _clusterList.Add(new ClusterListBoxItem(c));
+            }
         }
 
         private async void LoadLogFile(string path)
@@ -243,15 +244,20 @@ namespace PrettyScatter
             _highlightedPoint.IsVisible = false;
         }
 
+        private void ClusterListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Debug.Print(((sender as ListBox).SelectedItem as ClusterListBoxItem).DisplayName);
+        }
+
         public class ClusterListBoxItem
         {
             public string DisplayName { get; }
-            public readonly string ClusterName;
+            public readonly int ClusterId;
 
-            public ClusterListBoxItem(string clusterName)
+            public ClusterListBoxItem(int clusterId)
             {
-                ClusterName = clusterName;
-                DisplayName = clusterName;
+                DisplayName = $"Cluster - {clusterId}";
+                ClusterId = clusterId;
             }
         }
 
