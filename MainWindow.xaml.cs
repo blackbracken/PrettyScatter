@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
@@ -71,6 +72,15 @@ namespace PrettyScatter
                 Graph.Configuration.DoubleClickBenchmark = false;
 
                 Graph.Refresh();
+
+                // TODO: delete
+                var clusterList = new ObservableCollection<ClusterListBoxItem>();
+                for (var i = 0; i < 20; i++)
+                {
+                    clusterList.Add(new ClusterListBoxItem("cluster"));
+                }
+
+                ClusterListBox.ItemsSource = clusterList;
             }
         }
 
@@ -231,6 +241,18 @@ namespace PrettyScatter
             _highlightedPoint.MarkerSize = 10;
             _highlightedPoint.MarkerShape = MarkerShape.openCircle;
             _highlightedPoint.IsVisible = false;
+        }
+
+        public class ClusterListBoxItem
+        {
+            public string DisplayName { get; }
+            public readonly string ClusterName;
+
+            public ClusterListBoxItem(string clusterName)
+            {
+                ClusterName = clusterName;
+                DisplayName = clusterName;
+            }
         }
 
         public struct LogListItem
