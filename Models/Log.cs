@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PrettyScatter.Models
@@ -9,23 +11,20 @@ namespace PrettyScatter.Models
     public sealed class Log
     {
         public IImmutableList<string> LogTextList { get; }
+        public IImmutableList<string> StartedNewLineLogTextList { get; }
 
-        public Log(IEnumerable<string> logTextList)
+        public Log(IEnumerable<string> logTexts, IEnumerable<string> startedNewLineLogTexts)
         {
-            LogTextList = logTextList.ToImmutableList();
+            LogTextList = logTexts.ToImmutableList();
+            StartedNewLineLogTextList = startedNewLineLogTexts.ToImmutableList();
         }
 
-        public static async Task<Log?> FromFile(string path)
+        public static Log From(string[] array)
         {
-            try
-            {
-                var logTexts = await Task.Run(() => File.ReadAllLines(path));
-                return new Log(logTexts.ToImmutableList());
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            var startedNewLines = array
+                .Select(text => Regex.Replace(text, @"(?<=\G.{45})(?!$)", Environment.NewLine));
+
+            return new Log(array, startedNewLines);
         }
     }
 }

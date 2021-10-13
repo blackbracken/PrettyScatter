@@ -16,6 +16,32 @@ namespace PrettyScatter.Models
             PlotList = plots.ToImmutableList();
         }
 
+        public static async Task<Plots?> From(string[] rawPlots)
+        {
+            try
+            {
+                var plots = rawPlots
+                       .Select(line =>
+                       {
+                           var split = line.Split(",");
+                           return new Plot
+                           {
+                               X = double.Parse(split[0]),
+                               Y = double.Parse(split[1]),
+                               Cluster = int.Parse(split[2]),
+                           };
+                       })
+                       .ToList();
+
+                return new Plots(plots);
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public static async Task<Plots?> FromFile(string path)
         {
             try

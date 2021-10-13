@@ -24,7 +24,6 @@
                  MouseDoubleClick="Graph_OnMouseDoubleClick" />
         <DataGrid Name="LogGrid" Margin="0, 8, 16, 0"
                   IsSynchronizedWithCurrentItem="true"
-                  MouseDoubleClick="LogGrid_OnMouseDoubleClick"
                   IsReadOnly="True"
                   Grid.Column="1" Grid.Row="0" />
         <CheckBox Grid.Column="1" Grid.Row="1" Margin="0, 8, 16, 0"
