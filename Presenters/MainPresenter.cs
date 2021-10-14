@@ -27,6 +27,9 @@ namespace PrettyScatter.Presenters
         private double? _limitYMin { get; set; }
         public double LimitYMin => _limitYMin ?? 0.0;
 
+        public int? ChosenCluster { get; set; } = null;
+        public bool ShouldVisualizeCluster { get; set; } = false;
+
         public MainPresenter(MainWindow view)
         {
             _view = view;
