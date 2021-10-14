@@ -182,7 +182,7 @@ namespace PrettyScatter
                 _clusterColorMap.Add(c, Color.FromArgb(255, rnd.Next(0, 255), rnd.Next(0, 255), rnd.Next(0, 255)));
             }
 
-            RerenderGraph(_ => true);
+            RerenderGraph();
 
             _clusterList.Clear();
             var clusterList = plots.PlotList.Select(p => p.Cluster).Distinct().ToList();
@@ -221,7 +221,7 @@ namespace PrettyScatter
             );
         }
 
-        private void RerenderGraph(Func<int, bool> clusterFilter)
+        private void RerenderGraph(Func<int, bool>? clusterFilter = null)
         {
             ResetGraph();
             if (_presenter.Plots is not { } plots) return;
@@ -229,19 +229,30 @@ namespace PrettyScatter
             var groups = plots.PlotList.GroupBy(p => p.Cluster);
 
             _myScatterPlot = Graph.Plot.AddScatterPoints(
-                plots.PlotList.Where(p => clusterFilter(p.Cluster)).Select(p => p.X).ToArray(),
-                plots.PlotList.Where(p => clusterFilter(p.Cluster)).Select(p => p.Y).ToArray()
+                plots.PlotList.Where(p => clusterFilter?.Invoke(p.Cluster) ?? true).Select(p => p.X).ToArray(),
+                plots.PlotList.Where(p => clusterFilter?.Invoke(p.Cluster) ?? true).Select(p => p.Y).ToArray()
             );
 
             foreach (var g in groups)
             {
                 var cluster = g.First().Cluster;
-                if (!clusterFilter(cluster)) continue;
+                if (!(clusterFilter?.Invoke(cluster) ?? true)) continue;
 
                 var xs = g.Select(p => p.X).ToArray();
                 var ys = g.Select(p => p.Y).ToArray();
-                
+
                 Graph.Plot.AddScatter(xs, ys, lineWidth: 0, color: _clusterColorMap[cluster]);
+            }
+
+            if (_presenter.ShouldSetAxisLimits())
+            {
+                var limits = Graph.Plot.GetAxisLimits();
+                _presenter.SetAxisLimits(limits.XMax, limits.XMin, limits.YMax, limits.YMin);
+            }
+            else
+            {
+                Graph.Plot.SetAxisLimitsX(_presenter.LimitXMin, _presenter.LimitXMax);
+                Graph.Plot.SetAxisLimitsY(_presenter.LimitYMin, _presenter.LimitYMax);
             }
 
             Graph.Refresh(true);
@@ -261,8 +272,8 @@ namespace PrettyScatter
 
         private void ClusterListBox_OnSelectionChanged(object sender, RoutedEventArgs e)
         {
-            if (sender is not ListBox { SelectedItem: ClusterListBoxItem item }) return;
-            
+            if (sender is not ListBox {SelectedItem: ClusterListBoxItem item}) return;
+
             RerenderGraph(c => c == item.ClusterId);
         }
 
@@ -270,7 +281,7 @@ namespace PrettyScatter
         {
             ClusterListBox.UnselectAll();
 
-            RerenderGraph(_ => true);
+            RerenderGraph();
         }
 
         public class ClusterListBoxItem
@@ -289,6 +300,12 @@ namespace PrettyScatter
         {
             public int Index { get; set; }
             public string Content { get; set; }
+        }
+
+        private void Graph_OnAxesChanged(object? sender, EventArgs e)
+        {
+            var limits = Graph.Plot.GetAxisLimits();
+            _presenter.SetAxisLimits(limits.XMax, limits.XMin, limits.YMax, limits.YMin);
         }
     }
 }

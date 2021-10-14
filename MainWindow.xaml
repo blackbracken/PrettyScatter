@@ -49,7 +49,8 @@
                  MouseMove="Graph_OnMouseHoverPoint"
                  MouseEnter="Graph_OnMouseGoInScatterPlot"
                  MouseLeave="Graph_OnMouseGoOutScatterPlot"
-                 MouseDoubleClick="Graph_OnMouseDoubleClick" />
+                 MouseDoubleClick="Graph_OnMouseDoubleClick"
+                 AxesChanged="Graph_OnAxesChanged"/>
         <DataGrid Name="LogGrid" Margin="0, 8, 16, 0"
                   IsSynchronizedWithCurrentItem="true"
                   IsReadOnly="True"
