@@ -54,6 +54,7 @@
         <DataGrid Name="LogGrid" Margin="0, 8, 16, 0"
                   IsSynchronizedWithCurrentItem="true"
                   IsReadOnly="True"
+                  CurrentCellChanged="LogGrid_OnCurrentCellChanged"
                   Grid.Column="2" Grid.Row="0" />
         <CheckBox Grid.Column="2" Grid.Row="1" Margin="0, 8, 16, 0"
                   Content="選択プロットの強調" VerticalAlignment="Center" IsChecked="True" />
