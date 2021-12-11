@@ -248,7 +248,7 @@ namespace PrettyScatter
                 var xs = g.Select(p => p.X).ToArray();
                 var ys = g.Select(p => p.Y).ToArray();
 
-                Graph.Plot.AddScatter(xs, ys, _clusterColorMap[cluster]);
+                Graph.Plot.AddScatter(xs, ys, lineWidth: _presenter.ShouldVisualizeCluster ? 1 : 0, color: _clusterColorMap[cluster]);
             }
 
             if (_presenter.ShouldSetAxisLimits())
@@ -319,18 +319,9 @@ namespace PrettyScatter
 
         private void VisualizeClusterCheckBox_OnChanged(object sender, RoutedEventArgs e)
         {
+            _presenter.ShouldVisualizeCluster = VisualizeClusterCheckBox.IsChecked ?? false;
+            
             RenderGraph();
-        }
-
-        private void LogGrid_OnCurrentCellChanged(object? sender, EventArgs e)
-        {
-            // not cluster
-            var index = LogGrid.Items.IndexOf(LogGrid.CurrentItem);
-
-            var x = _myScatterPlot?.Xs[index] ?? 0.0;
-            var y = _myScatterPlot?.Ys[index] ?? 0.0;
-
-            MessageBox.Show($"X:{x}, Y:{y}", "position", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
