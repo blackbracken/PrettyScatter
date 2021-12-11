@@ -181,8 +181,8 @@ namespace PrettyScatter
                 var rnd = new Random(c);
                 _clusterColorMap.Add(c, Color.FromArgb(255, rnd.Next(0, 255), rnd.Next(0, 255), rnd.Next(0, 255)));
             }
-            
-            RenderGraph();
+
+            RerenderGraph();
 
             _clusterList.Clear();
             var clusterList = plots.PlotList.Select(p => p.Cluster).Distinct().ToList();
@@ -221,14 +221,7 @@ namespace PrettyScatter
             );
         }
 
-        private void RenderGraph()
-        {
-            Func<int, bool> filter = _presenter.ChosenCluster is { } cluster ? (c => cluster == c) : (_ => true);
-
-            RenderGraphWithFilter(filter);
-        }
-
-        private void RenderGraphWithFilter(Func<int, bool>? clusterFilter = null)
+        private void RerenderGraph(Func<int, bool>? clusterFilter = null)
         {
             ResetGraph();
             if (_presenter.Plots is not { } plots) return;
@@ -248,7 +241,7 @@ namespace PrettyScatter
                 var xs = g.Select(p => p.X).ToArray();
                 var ys = g.Select(p => p.Y).ToArray();
 
-                Graph.Plot.AddScatter(xs, ys, lineWidth: _presenter.ShouldVisualizeCluster ? 1 : 0, color: _clusterColorMap[cluster]);
+                Graph.Plot.AddScatter(xs, ys, lineWidth: 0, color: _clusterColorMap[cluster]);
             }
 
             if (_presenter.ShouldSetAxisLimits())
@@ -281,16 +274,14 @@ namespace PrettyScatter
         {
             if (sender is not ListBox {SelectedItem: ClusterListBoxItem item}) return;
 
-            _presenter.ChosenCluster = item.ClusterId;
-            RenderGraph();
+            RerenderGraph(c => c == item.ClusterId);
         }
 
         private void ResetClusterButton_OnClick(object sender, RoutedEventArgs e)
         {
             ClusterListBox.UnselectAll();
 
-            _presenter.ChosenCluster = null;
-            RenderGraph();
+            RerenderGraph();
         }
 
         public class ClusterListBoxItem
@@ -315,13 +306,6 @@ namespace PrettyScatter
         {
             var limits = Graph.Plot.GetAxisLimits();
             _presenter.SetAxisLimits(limits.XMax, limits.XMin, limits.YMax, limits.YMin);
-        }
-
-        private void VisualizeClusterCheckBox_OnChanged(object sender, RoutedEventArgs e)
-        {
-            _presenter.ShouldVisualizeCluster = VisualizeClusterCheckBox.IsChecked ?? false;
-            
-            RenderGraph();
         }
     }
 }

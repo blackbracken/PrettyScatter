@@ -57,10 +57,8 @@
                   Grid.Column="2" Grid.Row="0" />
         <CheckBox Grid.Column="2" Grid.Row="1" Margin="0, 8, 16, 0"
                   Content="選択プロットの強調" VerticalAlignment="Center" IsChecked="True" />
-        <CheckBox Name="VisualizeClusterCheckBox" Grid.Column="2" Grid.Row="2" Margin="0, 0, 16, 8"
-                  Content="クラスターの可視化" VerticalAlignment="Center" IsChecked="False"
-                  Checked="VisualizeClusterCheckBox_OnChanged"
-                  Unchecked="VisualizeClusterCheckBox_OnChanged"/>
+        <CheckBox Grid.Column="2" Grid.Row="2" Margin="0, 0, 16, 8"
+                  Content="クラスターの可視化" VerticalAlignment="Center" IsChecked="False" />
         <TextBlock Name="LogText" Margin="16, 0, 16, 16"
                    Text="Hello."
                    Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" />
