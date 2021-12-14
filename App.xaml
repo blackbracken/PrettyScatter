@@ -4,6 +4,11 @@
              xmlns:local="clr-namespace:PrettyScatter"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <!-- GridSplitter -->
+        <Style x:Key="VerticalGridSplitter" TargetType="{x:Type GridSplitter}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Width" Value="2" />
+            <Setter Property="Background" Value="Gray"></Setter>
+        </Style>
     </Application.Resources>
 </Application>
