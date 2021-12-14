@@ -8,7 +8,9 @@
     <Grid Name="RootGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="5*" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -27,8 +29,8 @@
             </Grid.RowDefinitions>
 
             <TextBlock Name="ClusterTitle" Grid.Row="0"
-                       Text="クラスター凝視" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Margin="0, 8, 0, 0"/>
+                       Text="クラスター凝視" VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Margin="0, 8, 0, 0" />
             <ListBox Name="ClusterListBox" Grid.Row="1" Margin="0, 8, 0, 0"
                      SelectionMode="Single"
                      SelectionChanged="ClusterListBox_OnSelectionChanged">
@@ -45,22 +47,30 @@
                     Content="クラスター凝視解除" Click="ResetClusterButton_OnClick" />
         </Grid>
 
-        <WpfPlot Name="Graph" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
+        <GridSplitter Grid.Row="0" Grid.Column="1" Style="{StaticResource VerticalGridSplitter}"
+                      Margin="8, 0, 0, 0"/>
+
+        <WpfPlot Name="Graph" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3"
                  MouseMove="Graph_OnMouseHoverPoint"
                  MouseEnter="Graph_OnMouseGoInScatterPlot"
                  MouseLeave="Graph_OnMouseGoOutScatterPlot"
                  MouseDoubleClick="Graph_OnMouseDoubleClick"
-                 AxesChanged="Graph_OnAxesChanged"/>
+                 AxesChanged="Graph_OnAxesChanged" />
+
+        <GridSplitter Grid.Row="0" Grid.Column="3" Style="{StaticResource VerticalGridSplitter}"
+                      Margin="0, 0, 8, 0"/>
+
         <DataGrid Name="LogGrid" Margin="0, 8, 16, 0"
                   IsSynchronizedWithCurrentItem="true"
                   IsReadOnly="True"
-                  Grid.Column="2" Grid.Row="0" />
-        <CheckBox Grid.Column="2" Grid.Row="1" Margin="0, 8, 16, 0"
+                  Grid.Column="4" Grid.Row="0" />
+        <CheckBox Grid.Column="4" Grid.Row="1" Margin="0, 8, 16, 0"
                   Content="選択プロットの強調" VerticalAlignment="Center" IsChecked="True" />
-        <CheckBox Grid.Column="2" Grid.Row="2" Margin="0, 0, 16, 8"
+        <CheckBox Grid.Column="4" Grid.Row="2" Margin="0, 0, 16, 8"
                   Content="クラスターの可視化" VerticalAlignment="Center" IsChecked="False" />
+
         <TextBlock Name="LogText" Margin="16, 0, 16, 16"
                    Text="Hello."
-                   Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" />
+                   Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" />
     </Grid>
 </Window>
