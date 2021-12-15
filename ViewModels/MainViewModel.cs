@@ -1,11 +1,14 @@
 ﻿using System.ComponentModel;
 using System.Linq;
+using PrettyScatter.Models;
 
 namespace PrettyScatter.ViewModels
 {
     public class MainViewModel
     {
         public LogItem[] LogItems { get; }
+
+        public Plot? SelectedPlot = null;
 
         public MainViewModel()
         {
