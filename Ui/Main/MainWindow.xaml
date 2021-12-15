@@ -48,7 +48,7 @@
         </Grid>
 
         <GridSplitter Grid.Row="0" Grid.Column="1" Style="{StaticResource VerticalGridSplitter}"
-                      Margin="8, 0, 0, 0"/>
+                      Margin="8, 0, 0, 0" />
 
         <WpfPlot Name="Graph" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3"
                  MouseMove="Graph_OnMouseHoverPoint"
@@ -58,12 +58,18 @@
                  AxesChanged="Graph_OnAxesChanged" />
 
         <GridSplitter Grid.Row="0" Grid.Column="3" Style="{StaticResource VerticalGridSplitter}"
-                      Margin="0, 0, 8, 0"/>
+                      Margin="0, 0, 8, 0" />
 
         <DataGrid Name="LogGrid" Margin="0, 8, 16, 0"
+                  AutoGenerateColumns="False"
                   IsSynchronizedWithCurrentItem="true"
                   IsReadOnly="True"
-                  Grid.Column="4" Grid.Row="0" />
+                  Grid.Column="4" Grid.Row="0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Index" Binding="{Binding Index}" />
+                <DataGridTextColumn Header="Contents" Binding="{Binding Content}" />
+            </DataGrid.Columns>
+        </DataGrid>
         <CheckBox Grid.Column="4" Grid.Row="1" Margin="0, 8, 16, 0"
                   Content="選択プロットの強調" VerticalAlignment="Center" IsChecked="True" />
         <CheckBox Grid.Column="4" Grid.Row="2" Margin="0, 0, 16, 8"

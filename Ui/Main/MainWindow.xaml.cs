@@ -30,6 +30,8 @@ namespace PrettyScatter.Ui.Main
             InitializeComponent();
             _presenter = new MainPresenter(this);
 
+            
+
             _clusterList = new ObservableCollection<ClusterListBoxItem>();
             ClusterListBox.ItemsSource = _clusterList;
             _clusterColorMap = new Dictionary<int, Color>();
@@ -295,7 +297,7 @@ namespace PrettyScatter.Ui.Main
             }
         }
 
-        public struct LogListItem
+        public class LogListItem
         {
             public int Index { get; set; }
             public string Content { get; set; }
