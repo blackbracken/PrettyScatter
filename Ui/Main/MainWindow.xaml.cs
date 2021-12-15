@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using PrettyScatter.Models;
 using PrettyScatter.Presenters;
 using PrettyScatter.Utils.Ext;
 using ScottPlot;
@@ -106,6 +108,8 @@ namespace PrettyScatter.Ui.Main
             _highlightedPoint.IsVisible = false;
             Graph.Refresh();
         }
+
+
 
         private void HighlightNearestPlot(object sender, MouseEventArgs ev, bool updateForce = false)
         {
@@ -307,6 +311,14 @@ namespace PrettyScatter.Ui.Main
         {
             var limits = Graph.Plot.GetAxisLimits();
             _presenter.SetAxisLimits(limits.XMax, limits.XMin, limits.YMax, limits.YMin);
+        }
+
+        private void LogGridCopy_OnClicked(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button { Tag: var log and LogListItem }) return;
+            if (log is not LogListItem item) return;
+
+            Clipboard.SetData(DataFormats.Text, item.Content);
         }
     }
 }

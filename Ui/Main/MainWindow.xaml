@@ -67,6 +67,13 @@
                   Grid.Column="4" Grid.Row="0">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Index" Binding="{Binding Index}" />
+                <DataGridTemplateColumn Header="Copy">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Copy" Click="LogGridCopy_OnClicked" Tag="{Binding}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Contents" Binding="{Binding Content}" />
             </DataGrid.Columns>
         </DataGrid>
