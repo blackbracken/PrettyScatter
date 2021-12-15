@@ -10,6 +10,7 @@ using System.Windows.Input;
 using PrettyScatter.Models;
 using PrettyScatter.Presenters;
 using PrettyScatter.Utils.Ext;
+using PrettyScatter.ViewModels;
 using ScottPlot;
 using ScottPlot.Plottable;
 
@@ -18,6 +19,7 @@ namespace PrettyScatter.Ui.Main
     public partial class MainWindow : Window
     {
         private readonly MainPresenter _presenter;
+        private MainViewModel ViewModel => (MainViewModel)DataContext;
 
         private ScatterPlot _highlightedPoint;
         private ScatterPlot? _myScatterPlot;
@@ -30,9 +32,9 @@ namespace PrettyScatter.Ui.Main
         public MainWindow()
         {
             InitializeComponent();
-            _presenter = new MainPresenter(this);
+            DataContext = new MainViewModel();
 
-            
+            _presenter = new MainPresenter(this);
 
             _clusterList = new ObservableCollection<ClusterListBoxItem>();
             ClusterListBox.ItemsSource = _clusterList;
@@ -87,18 +89,9 @@ namespace PrettyScatter.Ui.Main
             }
         }
 
-        private void Graph_OnMouseHoverPoint(object sender, MouseEventArgs ev)
-        {
-            if (!_mouseInScatterPlot) return;
-
-            HighlightNearestPlot(sender, ev);
-        }
-
         private void Graph_OnMouseGoInScatterPlot(object sender, MouseEventArgs ev)
         {
             _mouseInScatterPlot = true;
-
-            HighlightNearestPlot(sender, ev, true);
         }
 
         private void Graph_OnMouseGoOutScatterPlot(object sender, MouseEventArgs ev)
@@ -108,8 +101,6 @@ namespace PrettyScatter.Ui.Main
             _highlightedPoint.IsVisible = false;
             Graph.Refresh();
         }
-
-
 
         private void HighlightNearestPlot(object sender, MouseEventArgs ev, bool updateForce = false)
         {
@@ -137,6 +128,7 @@ namespace PrettyScatter.Ui.Main
             var (mouseX, mouseY) = Graph.GetMouseCoordinates();
             var xyRatio = Graph.Plot.XAxis.Dims.PxPerUnit / Graph.Plot.YAxis.Dims.PxPerUnit;
 
+
             return _myScatterPlot?.GetPointNearest(mouseX, mouseY, xyRatio);
         }
 
@@ -145,7 +137,7 @@ namespace PrettyScatter.Ui.Main
             if (!_mouseInScatterPlot) return;
 
             if (GetPointNearest() is not (_, _, _) nearest) return;
-            var (_, _, pointIndex) = nearest;
+            var (x, y, pointIndex) = nearest;
 
             if (pointIndex < 0 || LogGrid.Items.Count <= pointIndex)
             {
@@ -153,12 +145,17 @@ namespace PrettyScatter.Ui.Main
                 return;
             }
 
-            object item = LogGrid.Items.GetItemAt(pointIndex);
+            if (_presenter.Plots?.PlotList
+                ?.First(p => Math.Abs(p.X - x) < 0.00001 && Math.Abs(p.Y - y) < 0.00001) is not { } target) return;
+            if (_presenter.Plots?.PlotList?.ToList()?.IndexOf(target) is not { } index) return;
+
+            object item = LogGrid.Items.GetItemAt(index);
             LogGrid.SelectionMode = DataGridSelectionMode.Extended;
             LogGrid.SelectedItem = item;
             LogGrid.Focus();
             LogGrid.ScrollIntoView(item);
         }
+
 
         private async void LoadPlotsFile(string path)
         {
@@ -277,7 +274,7 @@ namespace PrettyScatter.Ui.Main
 
         private void ClusterListBox_OnSelectionChanged(object sender, RoutedEventArgs e)
         {
-            if (sender is not ListBox {SelectedItem: ClusterListBoxItem item}) return;
+            if (sender is not ListBox { SelectedItem: ClusterListBoxItem item }) return;
 
             RerenderGraph(c => c == item.ClusterId);
         }
