@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PrettyScatter.Models;
+using PrettyScatter.Ui.Main;
 
 namespace PrettyScatter.Presenters
 {
