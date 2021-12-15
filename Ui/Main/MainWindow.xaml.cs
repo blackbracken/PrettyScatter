@@ -149,6 +149,8 @@ namespace PrettyScatter.Ui.Main
                 ?.First(p => Math.Abs(p.X - x) < 0.00001 && Math.Abs(p.Y - y) < 0.00001) is not { } target) return;
             if (_presenter.Plots?.PlotList?.ToList()?.IndexOf(target) is not { } index) return;
 
+            LogText.Text = $"[ログ選択] X: {x:F2} Y: {y:F2} クラスター: {target.Cluster} 内容: {((LogListItem) LogGrid.Items.GetItemAt(index)).Content}";
+
             object item = LogGrid.Items.GetItemAt(index);
             LogGrid.SelectionMode = DataGridSelectionMode.Extended;
             LogGrid.SelectedItem = item;
@@ -293,7 +295,7 @@ namespace PrettyScatter.Ui.Main
 
             public ClusterListBoxItem(int clusterId)
             {
-                DisplayName = $"Cluster - {clusterId}";
+                DisplayName = clusterId.ToString();
                 ClusterId = clusterId;
             }
         }

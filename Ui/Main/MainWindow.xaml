@@ -77,9 +77,9 @@
             </DataGrid.Columns>
         </DataGrid>
         <CheckBox Grid.Column="4" Grid.Row="1" Margin="0, 8, 16, 0"
-                  Content="選択プロットの強調" VerticalAlignment="Center" IsChecked="True" />
+                  Content="選択プロットの強調" VerticalAlignment="Center" IsChecked="True" IsEnabled="False" />
         <CheckBox Grid.Column="4" Grid.Row="2" Margin="0, 0, 16, 8"
-                  Content="クラスターの可視化" VerticalAlignment="Center" IsChecked="False" />
+                  Content="クラスターの可視化" VerticalAlignment="Center" IsChecked="False" IsEnabled="False" />
 
         <TextBlock Name="LogText" Margin="16, 0, 16, 16"
                    Text="Hello."
