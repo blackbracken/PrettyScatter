@@ -209,7 +209,7 @@ namespace PrettyScatter.Ui.Main
 
             if (_presenter.Log is not { } log) return;
 
-            LogGrid.ItemsSource = new ObservableCollection<LogListItem>(log.StartedNewLineLogTextList
+            LogGrid.ItemsSource = new ObservableCollection<LogListItem>(log.LogTextList
                 .Select((elem, idx) =>
                     new LogListItem
                     {
