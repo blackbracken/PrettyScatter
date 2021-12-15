@@ -318,7 +318,14 @@ namespace PrettyScatter.Ui.Main
             if (sender is not Button { Tag: var log and LogListItem }) return;
             if (log is not LogListItem item) return;
 
-            Clipboard.SetData(DataFormats.Text, item.Content);
+            try
+            {
+                Clipboard.SetData(DataFormats.Text, item.Content);
+            }
+            catch
+            {
+                MessageBox.Show("クリップボードへのコピーに失敗しました", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
