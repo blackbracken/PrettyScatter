@@ -66,15 +66,15 @@
                   IsReadOnly="True"
                   Grid.Column="4" Grid.Row="0">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Index" Binding="{Binding Index}" />
-                <DataGridTemplateColumn Header="Copy">
+                <DataGridTextColumn Header="行" Binding="{Binding Index}" />
+                <DataGridTemplateColumn Header="ログコピー">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Copy" Click="LogGridCopy_OnClicked" Tag="{Binding}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Contents" Binding="{Binding Content}" />
+                <DataGridTextColumn Header="ログ内容" Binding="{Binding Content}" />
             </DataGrid.Columns>
         </DataGrid>
         <CheckBox Grid.Column="4" Grid.Row="1" Margin="0, 8, 16, 0"
