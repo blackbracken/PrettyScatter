@@ -7,12 +7,13 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using PrettyScatter.Models;
 using PrettyScatter.Presenters;
 using PrettyScatter.Utils.Ext;
 using ScottPlot;
 using ScottPlot.Plottable;
 
-namespace PrettyScatter
+namespace PrettyScatter.Ui.Main
 {
     public partial class MainWindow : Window
     {
@@ -30,6 +31,8 @@ namespace PrettyScatter
         {
             InitializeComponent();
             _presenter = new MainPresenter(this);
+
+            
 
             _clusterList = new ObservableCollection<ClusterListBoxItem>();
             ClusterListBox.ItemsSource = _clusterList;
@@ -105,6 +108,8 @@ namespace PrettyScatter
             _highlightedPoint.IsVisible = false;
             Graph.Refresh();
         }
+
+
 
         private void HighlightNearestPlot(object sender, MouseEventArgs ev, bool updateForce = false)
         {
@@ -210,7 +215,7 @@ namespace PrettyScatter
 
             if (_presenter.Log is not { } log) return;
 
-            LogGrid.ItemsSource = new ObservableCollection<LogListItem>(log.StartedNewLineLogTextList
+            LogGrid.ItemsSource = new ObservableCollection<LogListItem>(log.LogTextList
                 .Select((elem, idx) =>
                     new LogListItem
                     {
@@ -296,7 +301,7 @@ namespace PrettyScatter
             }
         }
 
-        public struct LogListItem
+        public class LogListItem
         {
             public int Index { get; set; }
             public string Content { get; set; }
@@ -306,6 +311,21 @@ namespace PrettyScatter
         {
             var limits = Graph.Plot.GetAxisLimits();
             _presenter.SetAxisLimits(limits.XMax, limits.XMin, limits.YMax, limits.YMin);
+        }
+
+        private void LogGridCopy_OnClicked(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button { Tag: var log and LogListItem }) return;
+            if (log is not LogListItem item) return;
+
+            try
+            {
+                Clipboard.SetData(DataFormats.Text, item.Content);
+            }
+            catch
+            {
+                MessageBox.Show("クリップボードへのコピーに失敗しました", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

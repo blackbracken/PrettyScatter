@@ -1,4 +1,4 @@
-﻿<Window x:Class="PrettyScatter.MainWindow"
+﻿<Window x:Class="PrettyScatter.Ui.Main.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -48,7 +48,7 @@
         </Grid>
 
         <GridSplitter Grid.Row="0" Grid.Column="1" Style="{StaticResource VerticalGridSplitter}"
-                      Margin="8, 0, 0, 0"/>
+                      Margin="8, 0, 0, 0" />
 
         <WpfPlot Name="Graph" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3"
                  MouseMove="Graph_OnMouseHoverPoint"
@@ -58,12 +58,25 @@
                  AxesChanged="Graph_OnAxesChanged" />
 
         <GridSplitter Grid.Row="0" Grid.Column="3" Style="{StaticResource VerticalGridSplitter}"
-                      Margin="0, 0, 8, 0"/>
+                      Margin="0, 0, 8, 0" />
 
         <DataGrid Name="LogGrid" Margin="0, 8, 16, 0"
+                  AutoGenerateColumns="False"
                   IsSynchronizedWithCurrentItem="true"
                   IsReadOnly="True"
-                  Grid.Column="4" Grid.Row="0" />
+                  Grid.Column="4" Grid.Row="0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="行" Binding="{Binding Index}" />
+                <DataGridTemplateColumn Header="ログコピー">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Copy" Click="LogGridCopy_OnClicked" Tag="{Binding}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="ログ内容" Binding="{Binding Content}" />
+            </DataGrid.Columns>
+        </DataGrid>
         <CheckBox Grid.Column="4" Grid.Row="1" Margin="0, 8, 16, 0"
                   Content="選択プロットの強調" VerticalAlignment="Center" IsChecked="True" />
         <CheckBox Grid.Column="4" Grid.Row="2" Margin="0, 0, 16, 8"
