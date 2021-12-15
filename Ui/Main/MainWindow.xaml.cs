@@ -216,7 +216,7 @@ namespace PrettyScatter.Ui.Main
                 .Select((elem, idx) =>
                     new LogListItem
                     {
-                        Index = idx,
+                        Index = idx + 1,
                         Content = elem,
                     }
                 )
