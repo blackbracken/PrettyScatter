@@ -19,7 +19,7 @@ namespace PrettyScatter.Ui.Main
     public partial class MainWindow : Window
     {
         private readonly MainPresenter _presenter;
-        private MainViewModel ViewModel => (MainViewModel)DataContext;
+        private MainViewModel ViewModel => (MainViewModel) DataContext;
 
         private ScatterPlot _highlightedPoint;
         private ScatterPlot? _myScatterPlot;
@@ -97,9 +97,6 @@ namespace PrettyScatter.Ui.Main
         private void Graph_OnMouseGoOutScatterPlot(object sender, MouseEventArgs ev)
         {
             _mouseInScatterPlot = false;
-
-            _highlightedPoint.IsVisible = false;
-            Graph.Refresh();
         }
 
         private void HighlightNearestPlot(object sender, MouseEventArgs ev, bool updateForce = false)
@@ -149,7 +146,8 @@ namespace PrettyScatter.Ui.Main
                 ?.First(p => Math.Abs(p.X - x) < 0.00001 && Math.Abs(p.Y - y) < 0.00001) is not { } target) return;
             if (_presenter.Plots?.PlotList?.ToList()?.IndexOf(target) is not { } index) return;
 
-            LogText.Text = $"[ログ選択] X: {x:F2} Y: {y:F2} クラスター: {target.Cluster} 内容: {((LogListItem) LogGrid.Items.GetItemAt(index)).Content}";
+            LogText.Text =
+                $"[ログ選択] X: {x:F2} Y: {y:F2} クラスター: {target.Cluster} 内容: {((LogListItem) LogGrid.Items.GetItemAt(index)).Content}";
 
             object item = LogGrid.Items.GetItemAt(index);
             LogGrid.SelectionMode = DataGridSelectionMode.Extended;
@@ -271,12 +269,12 @@ namespace PrettyScatter.Ui.Main
             _highlightedPoint.Color = Color.Red;
             _highlightedPoint.MarkerSize = 10;
             _highlightedPoint.MarkerShape = MarkerShape.openCircle;
-            _highlightedPoint.IsVisible = false;
+            _highlightedPoint.IsVisible = true;
         }
 
         private void ClusterListBox_OnSelectionChanged(object sender, RoutedEventArgs e)
         {
-            if (sender is not ListBox { SelectedItem: ClusterListBoxItem item }) return;
+            if (sender is not ListBox {SelectedItem: ClusterListBoxItem item}) return;
 
             RerenderGraph(c => c == item.ClusterId);
         }
@@ -314,7 +312,7 @@ namespace PrettyScatter.Ui.Main
 
         private void LogGridCopy_OnClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button { Tag: var log and LogListItem }) return;
+            if (sender is not Button {Tag: var log and LogListItem}) return;
             if (log is not LogListItem item) return;
 
             try
@@ -325,6 +323,25 @@ namespace PrettyScatter.Ui.Main
             {
                 MessageBox.Show("クリップボードへのコピーに失敗しました", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void LogGridSelect_OnClicked(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button {Tag: var log and LogListItem}) return;
+            if (log is not LogListItem item) return;
+            if (_presenter.Plots?.PlotList.ElementAt(item.Index) is not { } plot) return;
+
+            
+
+            _highlightedPoint.Xs[0] = plot.X;
+            _highlightedPoint.Ys[0] = plot.Y;
+            _highlightedPoint.IsVisible = true;
+
+            Graph.Refresh();
+
+            LogText.Text =
+                $"[ログ選択] X: {plot.X:F2} Y: {plot.Y:F2} クラスター: {plot.Cluster} 内容: {((LogListItem)LogGrid.Items.GetItemAt(item.Index)).Content}";
+
         }
     }
 }
