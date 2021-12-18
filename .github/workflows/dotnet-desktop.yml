@@ -30,18 +30,12 @@ jobs:
       
     - name: Build the application
       run: msbuild $env:Solution_Name /t:Build /p:Configuration=Release
-      
-    - name: ls 1
-      run: ls
-      
-    - name: ls 2
-      run: ls bin
-      
+
     - name: ls 3
-      run: ls bin/Releases
+      run: ls bin/Release
       
     - name: Compress the artifact
-      run: powershell compress-archive bin/Releases/net5.0-windows/* PrettyScatter.zip
+      run: powershell compress-archive bin/Release/net5.0-windows/* PrettyScatter.zip
 
     - name: Update the .exe artifact to GitHub Releases
       uses: marvinpinto/action-automatic-releases@v1.2.1
