@@ -26,10 +26,10 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
       
     - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Releases
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release
       
     - name: Build the application
-      run: msbuild $env:Solution_Name /t:Build /p:Configuration=Releases
+      run: msbuild $env:Solution_Name /t:Build /p:Configuration=Release
       
     - name: Compress the artifact
       run: powershell compress-archive bin/Releases/net5.0-windows/* PrettyScatter.zip
