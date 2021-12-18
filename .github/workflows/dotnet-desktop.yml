@@ -2,9 +2,7 @@ name: .NET Core Desktop
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: [ release ]
 
 jobs:
   build:
@@ -30,9 +28,6 @@ jobs:
       
     - name: Build the application
       run: msbuild $env:Solution_Name /t:Build /p:Configuration=Release
-
-    - name: ls 3
-      run: ls bin/Release
       
     - name: Compress the artifact
       run: powershell compress-archive bin/Release/net5.0-windows/* PrettyScatter.zip
