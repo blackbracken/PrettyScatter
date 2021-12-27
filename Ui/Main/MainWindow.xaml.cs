@@ -147,7 +147,13 @@ namespace PrettyScatter.Ui.Main
             if (_presenter.Plots?.PlotList?.ToList()?.IndexOf(target) is not { } index) return;
 
             LogText.Text =
-                $"[ログ選択] X: {x:F2} Y: {y:F2} クラスター: {target.Cluster} 内容: {((LogListItem) LogGrid.Items.GetItemAt(index)).Content}";
+                $"[ログ選択] L: {pointIndex} X: {x:F2} Y: {y:F2} クラスター: {target.Cluster} 内容: {((LogListItem) LogGrid.Items.GetItemAt(index)).Content}";
+
+            _highlightedPoint.Xs[0] = x;
+            _highlightedPoint.Ys[0] = y;
+            _highlightedPoint.IsVisible = true;
+
+            Graph.Refresh();
 
             object item = LogGrid.Items.GetItemAt(index);
             LogGrid.SelectionMode = DataGridSelectionMode.Extended;
@@ -329,9 +335,10 @@ namespace PrettyScatter.Ui.Main
         {
             if (sender is not Button {Tag: var log and LogListItem}) return;
             if (log is not LogListItem item) return;
-            if (_presenter.Plots?.PlotList.ElementAt(item.Index) is not { } plot) return;
 
-            
+            var idx = item.Index - 1;
+
+            if (_presenter.Plots?.PlotList.ElementAt(item.Index - 1) is not { } plot) return;
 
             _highlightedPoint.Xs[0] = plot.X;
             _highlightedPoint.Ys[0] = plot.Y;
@@ -340,7 +347,7 @@ namespace PrettyScatter.Ui.Main
             Graph.Refresh();
 
             LogText.Text =
-                $"[ログ選択] X: {plot.X:F2} Y: {plot.Y:F2} クラスター: {plot.Cluster} 内容: {((LogListItem)LogGrid.Items.GetItemAt(item.Index)).Content}";
+                $"[ログ選択] L: {item.Index} X: {plot.X:F2} Y: {plot.Y:F2} クラスター: {plot.Cluster} 内容: {((LogListItem)LogGrid.Items.GetItemAt(item.Index)).Content}";
 
         }
     }
