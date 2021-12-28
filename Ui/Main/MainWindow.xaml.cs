@@ -86,6 +86,9 @@ namespace PrettyScatter.Ui.Main
                 Graph.Configuration.DoubleClickBenchmark = false;
 
                 Graph.Refresh();
+                Graph.Plot.XLabel("X");
+                Graph.Plot.YLabel("Y");
+                Graph.Plot.Grid(false);
             }
         }
 
