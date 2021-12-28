@@ -19,7 +19,7 @@ namespace PrettyScatter.Ui.Main
     public partial class MainWindow : Window
     {
         private readonly MainPresenter _presenter;
-        private MainViewModel ViewModel => (MainViewModel)DataContext;
+        private MainViewModel ViewModel => (MainViewModel) DataContext;
 
         private ScatterPlot _highlightedPoint;
         private ScatterPlot? _myScatterPlot;
@@ -150,7 +150,7 @@ namespace PrettyScatter.Ui.Main
             if (_presenter.Plots?.PlotList?.ToList()?.IndexOf(target) is not { } index) return;
 
             LogText.Text =
-                $"[ログ選択] L: {pointIndex} X: {x:F2} Y: {y:F2} クラスター: {target.Cluster} 内容: {((LogListItem)LogGrid.Items.GetItemAt(index)).Content}";
+                $"[ログ選択] L: {pointIndex} X: {x:F2} Y: {y:F2} クラスター: {target.Cluster} 内容: {((LogListItem) LogGrid.Items.GetItemAt(index)).Content}";
 
             _highlightedPoint.Xs[0] = x;
             _highlightedPoint.Ys[0] = y;
@@ -205,7 +205,6 @@ namespace PrettyScatter.Ui.Main
             }
         }
 
-
         private async void LoadLogFile(string path)
         {
             LogText.Text = $"データ読み込み中: {path}";
@@ -231,12 +230,6 @@ namespace PrettyScatter.Ui.Main
                     }
                 )
             );
-        }
-
-        private void RelocateLogs(Func<LogListItem, bool>? filter = null)
-        {
-            var predicate = new Predicate<object>(item => item is not LogListItem i || (filter?.Invoke(i) ?? true));
-            LogGrid.Items.Filter = predicate;
         }
 
         private void RerenderGraph(Func<int, bool>? clusterFilter = null)
@@ -290,14 +283,9 @@ namespace PrettyScatter.Ui.Main
 
         private void ClusterListBox_OnSelectionChanged(object sender, RoutedEventArgs e)
         {
-            if (sender is not ListBox { SelectedItem: ClusterListBoxItem item }) return;
+            if (sender is not ListBox {SelectedItem: ClusterListBoxItem item}) return;
 
             RerenderGraph(c => c == item.ClusterId);
-
-            if (_presenter.Log is not { } log) return;
-            if (_presenter.Plots?.PlotList is not { } plots) return;
-
-            RelocateLogs(i => plots[i.Index - 1].Cluster == item.ClusterId);
         }
 
         private void ResetClusterButton_OnClick(object sender, RoutedEventArgs e)
@@ -305,9 +293,6 @@ namespace PrettyScatter.Ui.Main
             ClusterListBox.UnselectAll();
 
             RerenderGraph();
-
-            if (_presenter.Log is not { } log) return;
-            RelocateLogs();
         }
 
         public class ClusterListBoxItem
@@ -336,7 +321,7 @@ namespace PrettyScatter.Ui.Main
 
         private void LogGridCopy_OnClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button { Tag: var log and LogListItem }) return;
+            if (sender is not Button {Tag: var log and LogListItem}) return;
             if (log is not LogListItem item) return;
 
             try
@@ -351,7 +336,7 @@ namespace PrettyScatter.Ui.Main
 
         private void LogGridSelect_OnClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button { Tag: var log and LogListItem }) return;
+            if (sender is not Button {Tag: var log and LogListItem}) return;
             if (log is not LogListItem item) return;
 
             var idx = item.Index - 1;
@@ -366,6 +351,7 @@ namespace PrettyScatter.Ui.Main
 
             LogText.Text =
                 $"[ログ選択] L: {item.Index} X: {plot.X:F2} Y: {plot.Y:F2} クラスター: {plot.Cluster} 内容: {((LogListItem)LogGrid.Items.GetItemAt(item.Index)).Content}";
+
         }
     }
 }
